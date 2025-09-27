@@ -1,13 +1,13 @@
-enum TASKTYPE {
+export enum TASKTSTATUS {
   TODO,
   INPROGRESS,
   DONE,
 }
 
-interface Task {
+export interface Task {
   id: number;
   description: string;
-  status: TASKTYPE;
+  status: TASKTSTATUS;
   createdAt: string;
   updatedAt: string;
 }

@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "bun --watch src/index.ts"
   },
+  "bin": {
+    "cli-task": "./src/index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

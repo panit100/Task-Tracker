@@ -1,5 +1,106 @@
 #!/usr/bin/env bun
 
-const args = process.argv.slice(2);
+import { TASKTSTATUS, type Task } from './type';
 
-console.log('Hello');
+async function main() {}
+
+async function addTask(description: string) {
+  const tasks = await DataService.loadFile();
+  const lastTask = tasks.at(-1);
+
+  const newTask: Task = {
+    id: lastTask ? lastTask.id + 1 : 1,
+    description: description,
+    status: TASKTSTATUS.TODO,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  tasks.push(newTask);
+  await DataService.saveFile(tasks);
+}
+
+async function updateTask(id: number, description: string) {
+  const tasks = await DataService.loadFile();
+  const task = tasks.find((task) => task.id === id);
+  if (task) {
+    task.description = description;
+    (task.updatedAt = new Date().toISOString()),
+      await DataService.saveFile(tasks);
+  } else {
+    console.log('Task not found');
+  }
+}
+
+async function deleteTask(id: number) {
+  let tasks = await DataService.loadFile();
+  tasks = tasks.filter((task) => task.id !== id);
+  await DataService.saveFile(tasks);
+}
+
+async function markTask(id: number, status: TASKTSTATUS) {
+  const tasks = await DataService.loadFile();
+  const task = tasks.find((task) => task.id === id);
+  if (task) {
+    task.status = status;
+    (task.updatedAt = new Date().toISOString()),
+      await DataService.saveFile(tasks);
+  } else {
+    console.log('Task not found');
+  }
+}
+
+async function getTasks() {
+  const tasks = await DataService.loadFile();
+  const mapTask = tasks.map((task) => {
+    return {
+      id: task.id,
+      description: task.description,
+      status: TASKTSTATUS[task.status],
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+  });
+  console.log(mapTask);
+}
+
+async function getTasksWithType(type: TASKTSTATUS) {
+  let tasks = await DataService.loadFile();
+  tasks = tasks.filter((task) => task.status === type);
+  const mapTask = tasks.map((task) => {
+    return {
+      id: task.id,
+      description: task.description,
+      status: TASKTSTATUS[task.status],
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+  });
+  console.log(mapTask);
+}
+
+class DataService {
+  static deleteFile() {}
+
+  static async loadFile(): Promise<Task[]> {
+    const file = Bun.file('data.json');
+
+    if (!(await file.exists())) {
+      console.log('file not found');
+      return [];
+    }
+
+    const dataText = await file.text();
+    const data = JSON.parse(dataText) as Task[];
+    return data;
+  }
+
+  static async saveFile(data: Task[]) {
+    console.log('Saving Data...');
+    const dataText = JSON.stringify(data);
+    await Bun.write('data.json', dataText);
+    console.log('Data Saved!');
+  }
+}
+
+main();
