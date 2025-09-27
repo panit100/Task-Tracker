@@ -2,7 +2,59 @@
 
 import { TASKTSTATUS, type Task } from './type';
 
-async function main() {}
+async function main() {
+  const command = process.argv[2];
+  const args = process.argv[3];
+  const args2 = process.argv[4];
+  switch (command) {
+    case 'add':
+      if (args) {
+        await addTask(args);
+      } else {
+        console.log('Argument missing');
+      }
+      break;
+    case 'update':
+      if (args && args2) {
+        await updateTask(Number(args), args2);
+      } else {
+        console.log('Argument missing');
+      }
+      break;
+    case 'delete':
+      if (args) {
+        await deleteTask(Number(args));
+      } else {
+        console.log('Argument missing');
+      }
+      break;
+    case 'mark-in-progress':
+      if (args) {
+        await markTask(Number(args), TASKTSTATUS.IN_PROGRESS);
+      } else {
+        console.log('Argument missing');
+      }
+      break;
+    case 'mark-done':
+      if (args) {
+        await markTask(Number(args), TASKTSTATUS.DONE);
+      } else {
+        console.log('Argument missing');
+      }
+      break;
+    case 'list':
+      if (args) {
+        await getTasksWithType(args as TASKTSTATUS);
+      } else {
+        await getTasks();
+      }
+      break;
+    case 'help':
+    default:
+      //TODO show all function
+      break;
+  }
+}
 
 async function addTask(description: string) {
   const tasks = await DataService.loadFile();
@@ -56,7 +108,7 @@ async function getTasks() {
     return {
       id: task.id,
       description: task.description,
-      status: TASKTSTATUS[task.status],
+      status: task.status,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
@@ -71,7 +123,7 @@ async function getTasksWithType(type: TASKTSTATUS) {
     return {
       id: task.id,
       description: task.description,
-      status: TASKTSTATUS[task.status],
+      status: task.status,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
