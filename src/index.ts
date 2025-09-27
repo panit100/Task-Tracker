@@ -51,7 +51,7 @@ async function main() {
       break;
     case 'help':
     default:
-      //TODO show all function
+      help();
       break;
   }
 }
@@ -129,6 +129,25 @@ async function getTasksWithType(type: TASKTSTATUS) {
     };
   });
   console.log(mapTask);
+}
+
+function help() {
+  console.log(`
+    Task Tracker CLI - HELP
+
+    Usage:
+      task-cli <command> [arguments...]
+
+    Commands:
+      add               <description>                           Add a new task.
+      update            <id> <description>                      Update an existing task.
+      delete            <id>                                    Delete an existing task.
+      mark-in-progress  <id>                                    Mark a task as in progress.
+      mark-done         <id>                                    Mark a task as done.
+      list                                                      List all tasks.
+      list              <status : todo | in-progress | done>    List all tasks with a specific status.
+      help                                                      Show this help message.
+    `);
 }
 
 class DataService {
